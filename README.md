@@ -92,7 +92,8 @@ http = Net::HTTP.new(url.host, url.port);
 request = Net::HTTP::Post.new(url)
 request["x-resume-token"] = "0"
 request["Content-Type"] = "application/json"
-request.body = JSON.dump(params[:encryptedString])
+# You can also set which mode to validate the certificate with if you want (NORMAL_DGP [default], SUPER_DGP and BOOSTER_DGP)
+request.body = JSON.dump(params[:encryptedString].merge(mode: "SUPER_DGP"))
 
 response = http.request(request)
 puts response.read_body
@@ -103,7 +104,8 @@ puts response.read_body
 #         "date_of_birth": "1990-01-01",
 #         "result": true,
 #         "code": "VALID",
-#         "message": "This message might be available only when there's an error in future versions"
+#         "message": "This message might be available only when there's an error in future versions",
+#         "mode": "2G"  # 2G for super, 3G for normal, BOOSTER for booster
 #     }
 # }
 

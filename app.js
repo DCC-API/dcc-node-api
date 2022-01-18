@@ -11,7 +11,6 @@ const validateDcc = require('./src/validate_dcc.js')
 const {encrypt, decrypt} = require('./src/encryption.js')
 
 function requireHTTPS(req, res, next) {
-  console.log(req.secure);
   if (!req.secure && req.get('x-forwarded-proto') !== 'https' && process.env.NODE_ENV !== "development") {
     return res.redirect('https://' + req.get('host') + req.url);
   }
@@ -28,7 +27,7 @@ app.post('/encrypt', cors(), jsonParser, async (req, res) => {
     let result = await encrypt(rawString);
     res.json({encryptedString: result})
   } catch (e) {
-    // console.error(e);
+    console.error(e);
     res.status(400)
     res.json({error: "Bad request"})
   }
@@ -36,12 +35,12 @@ app.post('/encrypt', cors(), jsonParser, async (req, res) => {
 })
 
 app.post('/validations', jsonParser, async (req, res) => {
-  const { encryptedString } = req.body;
+  const { encryptedString, mode } = req.body;
 
   try {
     let decryptedString = decrypt(encryptedString);
     // console.log(decryptedString);
-    let result = await validateDcc(decryptedString);
+    let result = await validateDcc(decryptedString, mode);
     res.json({validation: result})
   } catch (e) {
     // console.error(e);
